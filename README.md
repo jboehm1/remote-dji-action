@@ -50,6 +50,21 @@ python3 tools/mimo_action6.py scan ./local-private/camera_capture.pcapng
 
 The scanner only reports complete, CRC-valid 0x02/0x6C frames; it does **not** reassemble split packets, act as a full PCAP parser, or transmit new commands.
 
+## Targeted follow-up: `gui_autorecord_param` and real APK analysis
+
+[Detailed investigation](docs/MIMO_APK_GUI_AUTORECORD_ANALYSIS_2026-10-29.md): `gui_autorecord_param` is **only documented as a subscription topic name** in a third-party Mimo capture. Its bytes and behavior are not decoded. It may refer to diving Auto Record rather than the camera's Timer Shooting. The native scheduled-job duration remains unmapped.
+
+A locally owned DJI Mimo APK can now be searched **without JADX** for protocol strings in DEX, `resources.arsc`, and native ELF `.so` libraries:
+
+```sh
+python3 tools/inspect_mimo_apk.py /path/to/DJI_Mimo.apk \
+  --output local-private/mimo-audit.json
+python3 tools/duml_topic_audit.py diff local-private/timer-3h.pcapng local-private/timer-5h.pcapng
+python3 -m unittest discover -s tests -p test_mimo_native_settings.py -v
+```
+
+**No actual DJI Mimo APK has been downloaded or decompiled in this project.** The available online app build is roughly 1 GB and this environment cannot fetch the binary. The committed decoder is a ready-to-run local offline investigation tool, not an APK finding.
+
 ## Two independent blockers
 
 1. **Finite >5h acceptance.** A LE32 field holds 28,800, but on-camera validation and persistence after reboot have not been demonstrated; a reversible protocol test is needed.
