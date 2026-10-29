@@ -30,11 +30,12 @@ Example: video, 10 s interval, 8h duration:
 - [Android capture and safe test procedure](docs/MIMO_CAPTURE_PROCEDURE.md): Bluetooth HCI snoop/ADB and network PCAP capture, how to isolate 5h/∞ settings changes and readback, privacy cautions.
 - [Offline DUML research tool](tools/mimo_action6.py): constructs an 8h settings **payload**; parses verified 0x55 DUML frames from saved binary; decodes `cam_lapse_param` and count-prefixed duration capability lists.
 - [Unit-test source](tests/test_mimo_action6.py): published golden wire frame, CRC, Action 6 600s example, 8h hypothesis, malformed messages.
+- [Mimo APK static investigator](tools/inspect_mimo_jadx.py): locally index relevant strings in a legitimately obtained JADX-decompiled DJI Mimo APK, without copying APK or decompiled code to GitHub.
 
 ## Minimal offline commands (no camera interaction)
 
 ```sh
-python3 tools/mimo_action6.py proposal --interval 10 --hours 8
+python3 tools/mimo_action6.py proposal --interval 10 --hours 8 --show-frame
 python3 tools/mimo_action6.py proposal --interval 10 --hours 10
 python3 tools/mimo_action6.py proposal --interval 10 --hours 12
 python3 -m unittest discover -s tests -p test_mimo_action6.py -v
