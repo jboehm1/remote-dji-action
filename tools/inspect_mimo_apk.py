@@ -134,6 +134,34 @@ def hits_for(value: str) -> list[str]:
     return sorted([term for term in TARGETS | NUMERIC_AS_STRINGS if term in lower])
 
 
+def native_strings_scan(archive: zipfile.ZipFile, ent: zipfile.ZipInfo):
+    """Match targeted ASCII tokens in ELF without extracting the binary.
+
+    Limit to controlled string names and labels, not numeric byte patterns.
+    This scans uncompressed ZIP entry chunks and handles boundary overlap.
+    """
+    needles = sorted(TARGETS - {"timelapse", "repeat", "daily"} |
+                     {"camcap_timelapse_duration", "cam_lapse_param",
+                      "gui_autorecord_param", "timer_shooting"}, key=len,
+                     reverse=True)
+    needles_b = [(name, name.encode("ascii")) for name in needles]
+    tail = b""
+    read_total = 0
+    chunk_size = 1024 * 1024
+    with archive.open(ent) as src:
+        while read_total < MAX_UNCOMPRESSED:
+            block = src.read(min(chunk_size, MAX_UNCOMPRESSED - read_total))
+            if not block:
+                break
+            read_total += len(block)
+            combined = (tail + block).lower()
+            for name, pattern in needles_b:
+                at = combined.find(pattern)
+                if at >= 0:
+                    yield (name, at + read_total - len(combined))
+            tail = combined[-256:]
+
+
 def inspect(apk: Path) -> dict:
     if not apk.is_file() or not zipfile.is_zipfile(apk):
         raise ValueError("Input must be a valid local APK/ZIP file")
@@ -168,6 +196,15 @@ def inspect(apk: Path) -> dict:
             elif ent.filename == "resources.arsc":
                 parsed = arsc_strings(archive.read(ent))
                 label = "resource-string"
+            elif ent.filename.endswith(".so"):
+                for term, off in native_strings_scan(archive, ent):
+                    counters[term] += 1
+                    if counters[term] <= MAX_SHOW_PER_KEY:
+                        out.setdefault(term, []).append({
+                            "location": "native-elf-string",
+                            "part": ent.filename, "byte_offset": off,
+                        })
+                continue
             else:
                 continue
             for idx, value in parsed:
