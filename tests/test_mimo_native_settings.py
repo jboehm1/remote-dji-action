@@ -59,6 +59,18 @@ class MimoNativeSettingsTests(unittest.TestCase):
             self.assertEqual(results["match_counts"]["gui_autorecord_param"], 1)
             self.assertEqual(results["match_counts"]["camcap_timelapse_duration"], 1)
 
+    def test_native_elf_strings_are_included(self):
+        with tempfile.TemporaryDirectory() as root:
+            apk = Path(root) / "mimo.with.native.apk"
+            with zipfile.ZipFile(apk, "w") as z:
+                z.writestr("lib/arm64-v8a/libcontrol.so",
+                           b"ELF" + bytes(130) +
+                           b"gui_autorecord_param\x00" +
+                           b"camcap_timelapse_duration\x00")
+            found = inspect(apk)
+            self.assertIn("gui_autorecord_param", found["match_counts"])
+            self.assertIn("camcap_timelapse_duration", found["match_counts"])
+
     def test_named_push_21_byte_setting(self):
         frame = push_topic("gui_autorecord_param", bytes.fromhex("00 10 0e 00 00"))
         summary = summarize_capture(frame)
