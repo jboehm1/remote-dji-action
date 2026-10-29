@@ -4,6 +4,10 @@
 
 **Current state: protocol research and offline tooling, NOT a working camera hack.** The existence of a 32-bit duration field does **not** prove the camera accepts an 8-hour value; an 8-hour timer does **not** create an internal recurring alarm. Hardware verification and a safe recovery strategy are mandatory before claiming a finished solution.
 
+## Important research correction: native Timer Shooting is the real target
+
+DJI introduced **Timer Shooting with Repeat** in Action 5 Pro in October 2024, and you report the Action 6 already provides daily scheduled captures up to 5 hours. That means our priority should be **extending the duration of the native scheduled job**, not just the 02/6C ordinary Timelapse setting. The on-wire schedule duration setter is **not yet known**. The existing 8-hour encoder is a hypothesis for ordinary Timelapse only. See [historical out-of-menu evidence audit](docs/HISTORICAL_OSMO_FORCED_SETTINGS_2026-10-29.md).
+
 ## Key research discovery — DJI Mimo's 8-hour field
 
 On a physical Action 6 running firmware **V01.02.0521** and iOS DJI Mimo **2.12.0**, [OpenPocketCine's detailed capture survey](https://opencapture.org/openpocketcine/docs/devices/action-6/modes/) documented camera-accepted **DUML 02/6C** Timelapse settings messages and matching `cam_lapse_param` readbacks.

@@ -1,6 +1,12 @@
 # Deep reverse engineering: DJI Mimo ↔ Osmo Action 6, native 8–12 h daily timelapse
 **Research baseline: 2026-10-29. No physical Action 6 access in this environment. All facts scoped to cited versions.**
 
+## IMPORTANT UPDATE (2026-10-29): Timer Shooting vs ordinary Timelapse
+
+Historical search found DJI **Action 5 Pro v01.01.05.20** introduced built-in **Timer Shooting** with clock start, duration and **Repeat** on 2024-10-16. Independent 2024 walkthrough demonstrates Repeat and Timelapse as schedule mode. The user confirms their Action 6 has a daily scheduled shooting function capped at 5 hours. Prior assertions that *no native recurring scheduler exists* were overly cautious and **must not be used as an architectural assumption**.
+
+Our 02/6C payload addresses **ordinary Timelapse duration**; the **scheduled task duration** may be stored in a completely separate structure. No public capture definitively maps the latter. The immediate experiment must diff native Timer Shooting **3h vs 5h**, while keeping all ordinary Timelapse settings identical, and inspect `gui_autorecord_param` plus other unknown camera status topics. See docs/HISTORICAL_OSMO_FORCED_SETTINGS_2026-10-29.md. Source: https://dl.djicdn.com/downloads/DJI_Osmo_Action_5_Pro/RN/20241126/DJI_Osmo_Action_5_Pro_Release_Notes_en.pdf and https://dronexl.co/2024/10/21/dji-osmo-action-5-pro-firmware-update-bitrate/ .
+
 ## 0. Correct end-state and distinction
 
 **Target:** after one-time setup, Action 6 alone automatically starts a native Timelapse at a chosen local time every day (e.g. 08:00), runs for 8–12 h, finalizes media, enters a truly low-energy state, wakes the next morning, repeats; **no ESP32, phone or network at runtime**.
