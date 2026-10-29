@@ -1,5 +1,12 @@
 # Engineering contract — DJI Action 6 daily timelapse
 
+## Product direction update — 2026-10-29
+
+**Primary user requirement: NO external device.** The camera itself must run a daily repeating Timelapse schedule with a freely configurable 8h+ window, then enter low-power/off state as appropriate and wake automatically next day. Prefer a reversible, on-camera settings/protocol modification; firmware patching is a research-only fallback until update/signature/recovery paths are demonstrated. The existing ESP32 PR is a fallback feasibility prototype, not the preferred final product.
+
+**Critical correction:** Do NOT assume an ordinary BLE STOP (DJI R SDK 1D03) puts the camera into deep sleep. DJI's Action 6 manual guarantees automatic off after 3s specifically for **SnapShot launched while powered off**, not for arbitrary STOP commands. DJI's remote-demo Q&A describes a different **sleep → remote wake → snapshot → return to sleep** flow. These are three distinct state transitions. Furthermore, DJI says **Timelapse Low Power Consumption (moon icon) disables Bluetooth and Wi-Fi during shooting**, potentially preventing an ESP32 BLE STOP at the desired end time. The fallback controller is therefore blocked on a proven end-of-session path when this feature is on. See `docs/POWER_STATES_AND_NATIVE_PLAN.md`.
+
+
 This is the **central development handoff**, binding for every contribution. Read it before editing code.
 
 ## Mission and operating boundaries
