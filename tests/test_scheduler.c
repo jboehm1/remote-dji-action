@@ -50,6 +50,20 @@ int main(void) {
     assert(daily_schedule_decide(&d, &t, &o) == DAILY_CLEAR_OWNERSHIP);
     o.clock_valid = false;
     assert(daily_schedule_decide(&d, &t, &o) == DAILY_HOLD);
+    o.clock_valid = true;
+    o.is_recording = true;
+    o.is_timelapse = false; /* Owning a previous lapse must never stop normal video. */
+    assert(daily_schedule_decide(&d, &t, &o) == DAILY_HOLD);
+    o.is_timelapse = true;
+    o.is_recording = false;
+    o.maybe_ours = false;
+    o.allow_start = false; /* Overheated or full card */
+    t = local_at(2026, 10, 29, 9, 0);
+    assert(daily_schedule_decide(&d, &t, &o) == DAILY_HOLD);
+    o.allow_start = true;
+    o.start_attempts = 3;
+    assert(daily_schedule_decide(&d, &t, &o) == DAILY_HOLD);
+    o.start_attempts = 0;
 
     d.start_minute = 23 * 60;
     d.end_minute = 2 * 60;
@@ -64,6 +78,18 @@ int main(void) {
     assert(!daily_schedule_active(&d, &t));
     t = local_at(2026, 10, 31, 1, 0);
     assert(!daily_schedule_active(&d, &t));
+
+    /* DST fall-back at 2026-10-25 03:00 CEST -> 02:00 CET:
+     * an 08:00-18:00 session must keep one start-day key. */
+    d.start_minute = 8 * 60;
+    d.end_minute = 18 * 60;
+    d.weekdays = 0x7f;
+    t = local_at(2026, 10, 25, 8, 0);
+    int32_t dst_session = daily_schedule_session_key(&d, &t);
+    t = local_at(2026, 10, 25, 17, 59);
+    assert(daily_schedule_session_key(&d, &t) == dst_session);
+    t = local_at(2026, 10, 26, 8, 0);
+    assert(daily_schedule_session_key(&d, &t) != dst_session);
 
     d.start_minute = d.end_minute;
     assert(!daily_schedule_valid(&d));
