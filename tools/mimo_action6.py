@@ -116,6 +116,34 @@ def decode_count_prefixed_durations(data: bytes) -> list[int]:
     return list(struct.unpack("<" + "I" * data[0], data[1:]))
 
 
+
+def encode_duml_frame(cmd_set: int, cmd_id: int, body: bytes, *,
+                      sequence: int = 0xA000, sender: int = 2,
+                      receiver: int = 1, flags: int = 0x40) -> bytes:
+    """Build an *OFFLINE ONLY* DUML frame, not BLE/UDP transport or a transmitter.
+
+    Defaults match captured Mimo sender=App, receiver=Camera, request flag.
+    No packet should be sent until a legitimate session, response routing, and
+    current camera model/firmware validation have been independently tested.
+    """
+    for name, value, limit in (
+        ("cmd_set", cmd_set, 255), ("cmd_id", cmd_id, 255),
+        ("sender", sender, 255), ("receiver", receiver, 255),
+        ("flags", flags, 255), ("sequence", sequence, 65535)
+    ):
+        if not isinstance(value, int) or not 0 <= value <= limit:
+            raise ValueError(f"{name} out of range")
+    total = 13 + len(body)
+    if not 13 <= total <= 1023:
+        raise ValueError("DUML frame length out of 10-bit range")
+    header = bytearray((0x55, total & 0xff, 0x04 | ((total >> 8) & 0x03)))
+    header.append(crc8(header))
+    header.extend((sender, receiver))
+    header.extend(struct.pack("<HBBB", sequence, flags, cmd_set, cmd_id))
+    header.extend(body)
+    return bytes(header) + struct.pack("<H", crc16(header))
+
+
 def scan_duml_frames(blob: bytes) -> Iterator[dict]:
     """Validate 0x55 DUML frames embedded in opaque bytes (UDP wrapper, HCI, etc.).
 
@@ -174,6 +202,8 @@ def cli() -> None:
     prop.add_argument("--interval", default="10", help="seconds, 0.1s steps")
     prop.add_argument("--hours", type=Decimal, default=Decimal(8))
     prop.add_argument("--save", choices=sorted(SAVE_FORMATS), type=int, default=0)
+    prop.add_argument("--show-frame", action="store_true",
+                      help="print offline DUML envelope; not BLE/UDP transmit packet")
     read = sub.add_parser("readback", help="decode 21-byte cam_lapse_param *body*")
     read.add_argument("--hex", required=True)
     cap = sub.add_parser("capabilities", help="decode normalized count+u32 duration list")
@@ -186,9 +216,13 @@ def cli() -> None:
         if not seconds.is_finite() or seconds != seconds.to_integral_value():
             ap.error("hours must resolve to a finite whole number of seconds")
         body = make_timelapse_payload(args.interval, int(seconds), args.save)
-        print(json.dumps({"payload_hex": body.hex(" "),
-                          "interpretation": decode_timelapse_payload(body),
-                          "transmitted": False}, indent=2))
+        out = {"payload_hex": body.hex(" "),
+               "interpretation": decode_timelapse_payload(body),
+               "transmitted": False}
+        if args.show_frame:
+            out["duml_envelope_hex"] = encode_duml_frame(2, 0x6c, body).hex(" ")
+            out["warning"] = "DUML only, without pairing/session/transport. DO NOT send blindly."
+        print(json.dumps(out, indent=2))
     elif args.command == "readback":
         print(json.dumps(decode_cam_lapse_param(parse_hex(args.hex)), indent=2))
     elif args.command == "capabilities":
