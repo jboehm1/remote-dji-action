@@ -112,3 +112,25 @@ If the camera supports the desired native daily schedule and accepts 28800s thro
 - No camera connected, no BLE packet sent, no firmware patched, and **no claim of custom duration acceptance**.
 
 **Licenses:** independently implemented decoding based on documented wire facts, not vendored source. Review license terms of upstream references separately before copy/pasting any code. Do not commit HCI logs, raw PCAPs, Wi-Fi SSIDs/passwords, PINs, tokens, precise GPS or camera MAC identifiers.
+
+## 8. DJI Mimo APK static analysis (without distributing APK)
+
+The physically observed traffic is **more authoritative** than strings in a decompiled app: UI validation code may be obfuscated and camera firmware may independently reject a duration. Nevertheless, code search can reveal whether Mimo itself uses a hardcoded finite Timelapse duration enum and whether the UI writes an actual daily schedule.
+
+Current DJI download center lists Android Mimo **2.12.4**. This repository has **not downloaded, disassembled or redistributed** the APK. A developer can inspect an authorized local copy with JADX:
+
+```sh
+jadx --no-res -d local-private/mimo-jadx /path/to/your/legitimate/DJI_Mimo.apk
+python3 tools/inspect_mimo_jadx.py local-private/mimo-jadx \
+  --json-out local-private/mimo-index.json
+```
+
+The local index records match **file paths/line numbers only**, not copyrighted source content. Search targets: `camcap_timelapse_duration`, `cam_lapse_param`, `gui_autorecord_param`, duration constants `18000`, `28800`, timelapse UI/scheduler methods and Android `AlarmManager`.
+
+**Interpretation caveats:**
+- Finding `18000` in Mimo does **not** prove camera firmware clamps at 5h.
+- Replacing Mimo's UI list does **not** necessarily change camera-side validation; and needing a phone at runtime would violate the target design.
+- Finding an Android `AlarmManager` could be for unrelated phone tasks, not camera internal RTC wake.
+- The word **Daily** in OpenPocketCine’s original video setup appears as a video/color-look setting, **not evidence of a daily Timelapse schedule**.
+- Without a local, legitimately acquired APK, there is no genuine static code result to claim.
+
