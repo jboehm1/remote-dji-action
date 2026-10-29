@@ -1,4 +1,5 @@
 /* Build: cc -std=c11 -Wall -Wextra -Werror -Icore core/scheduler.c tests/test_scheduler.c -o /tmp/test_schedule */
+#define _POSIX_C_SOURCE 200809L
 #include "scheduler.h"
 #include <assert.h>
 #include <stdio.h>
@@ -34,7 +35,7 @@ int main(void) {
     assert(!daily_schedule_active(&d, &t));
 
     daily_observation_t o = {.clock_valid = true, .camera_connected = true,
-        .status_fresh = true, .is_timelapse = true, .max_starts = 0};
+        .status_fresh = true, .is_timelapse = true};
     t = local_at(2026, 10, 29, 8, 0);
     assert(daily_schedule_decide(&d, &t, &o) == DAILY_START);
     o.is_timelapse = false;
