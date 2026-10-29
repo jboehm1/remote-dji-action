@@ -28,7 +28,8 @@ E_wh/day = (3.3 / 1000) * (I_active_mA * active_h +
 | Configuration | Sleep draw | Active duty cycle | Controller energy Wh/day | 5V input mAh/day (85%) |
 |---|---:|---|---:|---:|
 | Bare C6 chip, optimistic | 7µA | 2 × 30 s at 100mA | **0.0061** | **1.4** |
-| Optimized low-leakage board | 30µA | 2 × 60 s at 100mA | **0.0134** | **3.1** |
+| Optimized low-leakage board (one daily start + stop) | 30µA | 2 × 60 s at 100mA | **0.0134** | **3.1** |
+| Optimized board (two daily sessions = 4 commands) | 30µA | 4 × 60 s at 100mA | **0.0244** | **5.7** |
 | Conservative low-leakage board | 100µA | 2 × 120 s at 150mA | **0.0409** | **9.6** |
 | Every 15 min reconnection / wake attempt | 30µA | 96 × 5 s at 120mA | **0.0552** | **13.0** |
 | Ordinary dev board sleeping, optimistic regulator | 1mA | 2 × 60 s at 100mA | **0.0901** | **21.2** |

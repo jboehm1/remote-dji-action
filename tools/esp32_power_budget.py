@@ -46,6 +46,7 @@ class Scenario:
 SCENARIOS = [
     Scenario("ESP32-C6 chip ONLY theoretical, 2 x 30 s", 7, 100, 30, 2),
     Scenario("Low-leakage 30uA board, 2 x 60 s", 30, 100, 60, 2),
+    Scenario("Low-leakage 30uA board, 4 x 60 s", 30, 100, 60, 4),
     Scenario("Conservative 100uA board, 2 x 120 s", 100, 150, 120, 2),
     Scenario("Every 15 min: 96 x 5 s (not proven to retain camera wake)", 30, 120, 5, 96),
     Scenario("Dev board 1mA sleep, 2 x 60 s", 1000, 100, 60, 2),
