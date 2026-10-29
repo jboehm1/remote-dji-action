@@ -8,7 +8,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "driver/temperature_sensor.h"
 #include "esp_err.h"
 #include "esp_event.h"
 #include "esp_log.h"
@@ -29,20 +28,26 @@
 #include "command_logic.h"
 #include "status_logic.h"
 #include "enums_logic.h"
+#include "dji_protocol_data_structures.h"
 
 static const char *TAG = "DAILY_LAPSE";
 static volatile uint32_t last_status_ms = 0;
+static volatile uint8_t camera_heat_status = 255;
+static volatile uint32_t camera_storage_mb = 0;
 static bool maybe_ours = false;
 static int32_t attempts_session = -1;
 static uint8_t start_attempts = 0;
 static uint32_t last_command_ms = 0;
-static bool wifi_connected = false;
 
 static uint32_t uptime_ms(void) {
     return (uint32_t)(esp_timer_get_time() / 1000ULL);
 }
 
 static void status_received(void *data) {
+    if (!data) return;
+    const camera_status_push_command_frame *state = data;
+    camera_heat_status = state->temp_over;
+    camera_storage_mb = state->remain_capacity;
     update_camera_state_handler(data);
     last_status_ms = uptime_ms();
 }
@@ -77,10 +82,8 @@ static void load_state(void) {
 static void wifi_event(void *arg, esp_event_base_t base, int32_t id, void *data) {
     (void)arg; (void)data;
     if (base == WIFI_EVENT && id == WIFI_EVENT_STA_DISCONNECTED) {
-        wifi_connected = false;
         esp_wifi_connect();
     } else if (base == IP_EVENT && id == IP_EVENT_STA_GOT_IP) {
-        wifi_connected = true;
         ESP_LOGI(TAG, "Wi-Fi connected; SNTP available");
     }
 }
@@ -129,6 +132,8 @@ static bool connect_camera(void) {
     if (subscript_camera_status(PUSH_MODE_PERIODIC_WITH_STATE_CHANGE, PUSH_FREQ_2HZ) != 0)
         return false;
     last_status_ms = 0; /* Require a fresh 1D02 after every connect. */
+    camera_heat_status = 255;
+    camera_storage_mb = 0;
     ESP_LOGI(TAG, "Camera connected; awaiting validated status");
     return true;
 }
@@ -199,6 +204,7 @@ void app_main(void) {
                             (uint32_t)(now_ms - last_status_ms) < 10000,
             .is_recording = is_camera_recording(),
             .is_timelapse = current_camera_mode == CAMERA_MODE_TIMELAPSE,
+            .allow_start = camera_heat_status == 0 && camera_storage_mb >= 1024,
             .maybe_ours = maybe_ours,
             .start_attempts = start_attempts,
         };

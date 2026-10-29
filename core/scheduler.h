@@ -20,6 +20,7 @@ typedef struct {
     bool status_fresh;
     bool is_recording;
     bool is_timelapse;
+    bool allow_start;   /* true only when camera temperature/storage checks pass */
     bool maybe_ours;      /* persisted before sending START */
     uint8_t start_attempts;
 } daily_observation_t;

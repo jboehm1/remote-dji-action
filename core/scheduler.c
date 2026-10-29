@@ -58,11 +58,13 @@ daily_action_t daily_schedule_decide(const daily_schedule_t *plan,
         return DAILY_HOLD; /* Never act using guessed camera/time state. */
     if (!daily_schedule_active(plan, local)) {
         if (obs->maybe_ours)
-            return obs->is_recording ? DAILY_STOP : DAILY_CLEAR_OWNERSHIP;
+            return obs->is_recording && obs->is_timelapse ? DAILY_STOP :
+                   obs->is_recording ? DAILY_HOLD : DAILY_CLEAR_OWNERSHIP;
         return DAILY_HOLD; /* Never stop somebody else's recording. */
     }
     if (obs->is_recording) return DAILY_HOLD;
-    if (obs->start_attempts >= plan->max_starts) return DAILY_HOLD;
+    if (!obs->allow_start || obs->start_attempts >= plan->max_starts)
+        return DAILY_HOLD;
     if (!obs->is_timelapse) return DAILY_SELECT_TIMELAPSE;
     return DAILY_START;
 }

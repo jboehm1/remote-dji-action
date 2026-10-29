@@ -35,7 +35,7 @@ int main(void) {
     assert(!daily_schedule_active(&d, &t));
 
     daily_observation_t o = {.clock_valid = true, .camera_connected = true,
-        .status_fresh = true, .is_timelapse = true};
+        .status_fresh = true, .is_timelapse = true, .allow_start = true};
     t = local_at(2026, 10, 29, 8, 0);
     assert(daily_schedule_decide(&d, &t, &o) == DAILY_START);
     o.is_timelapse = false;
