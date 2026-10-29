@@ -1,0 +1,38 @@
+menu "Daily DJI Timelapse Settings"
+    config DT_WIFI_SSID
+        string "Wi-Fi SSID for NTP sync"
+        default ""
+    config DT_WIFI_PASSWORD
+        string "Wi-Fi password (stored in firmware; do not commit sdkconfig)"
+        default ""
+    config DT_NTP_SERVER
+        string "NTP server"
+        default "pool.ntp.org"
+    config DT_TZ
+        string "POSIX timezone for local wall clock and DST"
+        default "CET-1CEST,M3.5.0,M10.5.0/3"
+    config DT_START_HOUR
+        int "Daily start hour (0-23)"
+        range 0 23
+        default 8
+    config DT_START_MINUTE
+        int "Daily start minute (0-59)"
+        range 0 59
+        default 0
+    config DT_END_HOUR
+        int "Daily stop hour (0-23)"
+        range 0 23
+        default 18
+    config DT_END_MINUTE
+        int "Daily stop minute (0-59)"
+        range 0 59
+        default 0
+    config DT_WEEKDAYS_MASK
+        int "Active weekdays mask: Sun=1 Mon=2 ... Sat=64 (127=all)"
+        range 1 127
+        default 127
+    config DT_MAX_STARTS
+        int "Max START command attempts per calendar window"
+        range 1 20
+        default 3
+endmenu

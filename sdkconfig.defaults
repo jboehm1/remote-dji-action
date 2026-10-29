@@ -1,0 +1,4 @@
+# ESP-IDF on ESP32-C6 with Bluetooth Bluedroid and Wi-Fi coexistence.
+CONFIG_BT_ENABLED=y
+CONFIG_BT_BLE_42_FEATURES_SUPPORTED=y
+# Keep Wi-Fi credentials and secrets in local sdkconfig, never in git.

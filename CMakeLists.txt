@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.16)
+if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/vendor/dji-sdk/ble/ble.c")
+    message(FATAL_ERROR "DJI demo submodule missing: git submodule update --init --recursive")
+endif()
+include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+idf_build_set_property(MINIMAL_BUILD ON)
+project(osmo_action_daily_timelapse)
