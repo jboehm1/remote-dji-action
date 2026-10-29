@@ -50,7 +50,7 @@ def uleb128(b: bytes, pos: int) -> tuple[int, int]:
 
 def dex_strings(data: bytes):
     """Extract strings by DEX string_ids offsets; no bytecode execution."""
-    if len(data) < 112 or not data.startswith(b"dex\\n"):
+    if len(data) < 112 or not data.startswith(b"dex\n"):
         return
     if data[7] != 0:
         return
@@ -63,7 +63,7 @@ def dex_strings(data: bytes):
             continue
         try:
             _, pos = uleb128(data, s_off)
-            end = data.find(b"\\x00", pos, min(pos + 4097, len(data)))
+            end = data.find(b"\x00", pos, min(pos + 4097, len(data)))
             if end < 0:
                 continue
             # Java modified UTF-8 differs slightly; text replacement is enough
@@ -161,7 +161,7 @@ def inspect(apk: Path) -> dict:
                     out.setdefault(key, []).append({"location": "apk-entry", "part": ent.filename})
             if ent.file_size > MAX_UNCOMPRESSED or ent.compress_size == 0:
                 continue
-            if re.fullmatch(r"classes\\d*\\.dex", Path(ent.filename).name):
+            if re.fullmatch(r"classes\d*\.dex", Path(ent.filename).name):
                 result["dex_files"] += 1
                 parsed = dex_strings(archive.read(ent))
                 label = "dex-string"
@@ -192,7 +192,7 @@ def main() -> None:
     data = json.dumps(inspect(args.apk), ensure_ascii=False, indent=2)
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
-        args.output.write_text(data + "\\n", encoding="utf-8")
+        args.output.write_text(data + "\n", encoding="utf-8")
         print(f"Report: {args.output}")
     else:
         print(data)
