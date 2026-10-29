@@ -12,6 +12,10 @@ This is the **central development handoff**, binding for every contribution. Rea
 ## Mission and operating boundaries
 Create a daily, scheduled **genuine camera Timelapse** (not normal video), with editable start and stop **wall-clock times**, weekday selection, DST awareness and no five-hour total-time restriction. Example: every day 08:00–18:00 (10h). Other windows, including overnight windows, must work. Camera must not record at night unless the chosen window includes night. Multi-day unattended operation is the quality target, but it is **not yet achieved or demonstrated**.
 
+**HARD NIGHT-WAKE BLOCKER:** Official DJI GPS controller protocol documentation `001A` states BLE broadcast waking needs prior recent connection and camera sleep duration **no more than 30 minutes** (examples from Action 4/5). Do not treat this as an established Action 6 limit, but **do not design a 14-hour camera sleep + one morning BLE wake** without explicitly measuring Action 6 behaviour after 40min, 2h and 14h. If wake fails, any energy budget relying on only two daily active windows does not imply a working system. See `docs/NATIVE_FIRMWARE_FEASIBILITY_2026-10-29.md`, `docs/ENERGY_BUDGET.md`, and issue #2.
+
+**CURRENT CODE ENERGY WARNING:** `main/app_main.c` currently leaves Wi-Fi/BLE active and does not enter ESP32 deep sleep. 7uA is the Espressif silicon specification, **not the measured draw of this prototype**. Before promising 0.01Wh/day, add low-leakage regulator/RTC, deep-sleep firmware, BLE wake verification and bench measurements.
+
 ## Strict priorities
 1. Do not damage, flash, downgrade, overwrite, or patch DJI camera firmware in this project without a separate recovery/rollback design and explicit authorization. No proprietary binary distribution.
 2. Implement and hardware-test **external ESP32 BLE scheduler** before attempting firmware hacks.
