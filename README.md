@@ -1,8 +1,19 @@
 # Osmo Action 6 — Daily Timelapse Scheduler
 
-**Goal:** True Action 6 **Timelapse**, every day on a freely chosen schedule, e.g. **08:00–18:00 (10 hours)**, without the **5-hour finite duration** option restricting the recording. Work toward weeks of unattended operation.
+**Goal:** True Action 6 **Timelapse**, every day on a freely chosen schedule, e.g. **08:00–18:00 (10 hours)**, without the **5-hour finite duration** menu restriction. **The primary target is camera-only: no phone, ESP32 or other runtime hardware.** Work toward weeks of unattended operation.
 
 > ⚠️ **Prototype; not tested on physical Action 6 or built with ESP-IDF yet. Do not leave unattended.**
+
+## Research update: important camera wake limitation (2026-10-29)
+
+**New primary direction: internal camera-only scheduling and custom 8h+ setting, IF a safe reversible path is feasible.** The ESP32 branch is a fallback experiment and its firmware has not been built or run on a camera.
+
+- DJI's official remote protocol says broadcast BLE wake requires the camera to have slept **no more than 30 minutes**, illustrated with older Action 4/5 models. We have **not confirmed** whether Action 6 has the same limit. Do not assume it can wake after 14 hours.
+- DJI says Timelapse moon low-power mode **disables Bluetooth and Wi-Fi during capture**, potentially blocking external STOP.
+- A custom `28800`-second duration setting would not by itself make the camera restart automatically tomorrow. Native recurring schedule and internal RTC alarms also need investigation.
+- **Current ESP32 firmware has no deep-sleep code**. The ~0.01Wh/day target is for a **future optimized board**, not the current always-on implementation.
+
+Read [camera-only feasibility study](docs/NATIVE_FIRMWARE_FEASIBILITY_2026-10-29.md), [camera power states](docs/POWER_STATES_AND_NATIVE_PLAN.md), and [calculated ESP32 energy budgets](docs/ENERGY_BUDGET.md). Reproduce estimates with `python3 tools/esp32_power_budget.py`.
 
 ## Quick answer: how we go beyond five hours
 
@@ -24,8 +35,8 @@ ESP32-C6 (NTP time, DST, persistent schedule)
 
 | Route | Feasibility | Our status |
 |---|---|---|
-| **A. ESP32 daily BLE scheduler + ∞** | Most promising, avoids modifying camera | **Code prototype** + unit tests, camera not tested |
-| **B. Push 8h over BLE** | Encoding possible, **acceptance unknown**; Mimo protocol vs GPS remote | Offline packet payload experiment |
+| **A. ESP32 daily BLE scheduler + ∞** | Conditional: overnight wake and low-power STOP may fail | **Code prototype**, camera not tested |
+| **B. Push 8h over BLE + native scheduler** | **Preferred if** a native recurring schedule exists; 8h acceptance unknown | Offline packet experiment |
 | **C. Hack camera firmware** | High risk, requires compatible firmware + full recovery | Not started |
 
 See [research and evidence](docs/RESEARCH.md). DJI Mimo's observed duration parameter uses LE32 seconds, but the Action 6's published capability list ends at 18,000 seconds (5h) plus 0=unlimited. Sending 28,800 as bytes is *not proof* the camera accepts it.
