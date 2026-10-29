@@ -66,6 +66,18 @@ class MimoAction6Tests(unittest.TestCase):
         with self.assertRaises(ValueError):
             mimo.make_timelapse_payload("10", 100, save=1)
 
+    def test_encode_frame_roundtrip_offline(self):
+        body = mimo.make_timelapse_payload("10", 28800)
+        frame = mimo.encode_duml_frame(2, 0x6C, body)
+        self.assertEqual(len(frame), 29)
+        self.assertEqual(frame[:3], bytes([0x55, 0x1D, 0x04]))
+        got = list(mimo.scan_duml_frames(frame))
+        self.assertEqual(len(got), 1)
+        self.assertEqual((got[0]["cmd_set"], got[0]["cmd_id"]), (2, 0x6C))
+        self.assertEqual(got[0]["body"], body)
+        matching = mimo.summarize_lapse_frames(frame)
+        self.assertEqual(matching[0]["timelapse"]["duration_seconds"], 28800)
+
     def test_unlimited_is_zero_duration(self):
         payload = mimo.make_timelapse_payload("0.5", 0, save=2)
         parsed = mimo.decode_timelapse_payload(payload)
