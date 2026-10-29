@@ -42,6 +42,13 @@ Duration  ∞ = 0 (LE: 00 00 00 00).
 ```
 **This is a 16-byte parameter body, NOT a ready-to-send BLE packet.** Connection, routing, DUML envelope, CRCs, acknowledgement and readback all matter. Encoder in `tools/mimo_action6.py` deliberately has NO radio transmitter.
 
+### Reproducible hypothetical full DUML envelope (NOT an actual Mimo capture)
+The offline tool now also composes a complete CRC-validated **29-byte DUML envelope** assuming app sender 02, camera receiver 01, request flags 40 and sequence A000:
+```text
+55 1D 04 DF 02 01 00 A0 40 02 6C 04 00 00 64 00 80 70 00 00 00 00 00 00 00 00 00 66 01
+```
+This hex was independently cross-calculated with CRC8/CRC16 and is intended ONLY as an **offline synthetic test vector**. It lacks real BLE pairing, Wi-Fi datalink session wrapping, current camera identity and actual sequence, so it is **not a validated live packet**. Generate via `python3 tools/mimo_action6.py proposal --interval 10 --hours 8 --show-frame`.
+
 ### Timelapse readback is NOT the SET body
 OpenPocketCine documented 21-byte **topic data** `cam_lapse_param`, not the full `00/99` status notification envelope:
 ```text
