@@ -1,0 +1,17 @@
+# Raw camera/phone captures may contain Wi-Fi credentials, device identifiers and pairing tokens.
+captures/
+local-private/
+*.pcap
+*.pcapng
+*.pklg
+*.btsnoop
+*btsnoop*.log
+*bugreport*.zip
+*.apk
+*.bin
+*.img
+sdkconfig
+sdkconfig.old
+__pycache__/
+*.pyc
+.DS_Store
