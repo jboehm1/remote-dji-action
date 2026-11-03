@@ -60,6 +60,56 @@ camera's processing duty cycle does not overlap. This is a model, not
 evidence for actual camera watts. Further, wireless radio, sensor warmup,
 video encoding, screen and display policy may behave differently by mode.
 
+## User's actual field observation, November 3 (important)
+
+**Reported, not instrumented:** Osmo Action 5 Pro battery started at **14%**;
+a **10,000 mAh** power bank started at **90%**. Both showed **0%** at the end,
+after producing **14 minutes of finished Timelapse MP4**. Capture interval is
+**uncertain**: user recalls **1 s**, but an earlier interpretation was **2 s**.
+The MP4 frame rate and real stopwatch duration have not been verified. Camera
+moon/AOD status was not recorded. This is a substantial owner-supplied
+real-world test, but not a measured camera draw or DJI mode A/B test.
+
+DJI [Action 5 Pro official specs](https://www.dji.com/osmo-action-5-pro/specs)
+state native Timelapse MP4 is **25 or 30 fps**. With **14 min playback**:
+
+| Interval | 25 fps real capture time | 30 fps real capture time |
+|---|---:|---:|
+| 1 s | 5 h 50 min | 7 h |
+| 2 s | 11 h 40 min | 14 h |
+
+The 14 h interpretation is consistent with **2 s at 30 fps**, not 1 s.
+If 14 min was the *wall-clock recording time* instead of the final accelerated
+video length, the table does **not** apply. Verify the actual clip metadata.
+
+Energy approximation: original Action 5 battery 7.5 Wh x 14% = **1.05 Wh**;
+bank nominal 10,000 mAh x approximately 3.7 V x 90% = **33.3 Wh**.
+Assuming **80–90% bank conversion efficiency** and representative percentage
+gauges, about **27.7–31.0 Wh** reaches the camera in total. This is imprecise
+because USB power also charges the camera and battery percentages are not
+laboratory energy readings.
+
+| Interpretation | Estimated average draw (energy / actual capture time) |
+|---|---:|
+| 1 s, 25 fps | 4.8–5.3 W |
+| 1 s, 30 fps | **4.0–4.4 W** |
+| 2 s, 25 fps | 2.4–2.7 W |
+| 2 s, 30 fps | **2.0–2.2 W** |
+
+The result is **not** evidence moon OFF uses exactly 2–4 W, or that moon ON
+fails: the user did not record which moon/screen options were active. It does
+show why replacing this with the DJI **0.5 W standby** rating would produce
+an unrealistic runtime forecast.
+
+Reproduce the conditional numbers, then adapt them to the measured clip FPS
+and actual interval, using `python3 tools/action5_calibrate.py --interval-s 1
+--fps 30`. The script also predicts a possible runtime for a **20,000 mAh
+100% bank plus 50% original camera battery**, conditional on identical draw.
+
+Next field test: read MP4 `avg_frame_rate` and `duration` with `ffprobe`, note
+the exact menu interval and moon choice, and record real start/end timestamps.
+Keep *reconstructed Wh* separate from USB wattmeter/Wh data.
+
 ## Profiles and supported/unsupported promises
 
 | Profile | Moon | Camera connections | External timed STOP | Preview | Power measurement |

@@ -8,6 +8,13 @@
 **[Important: Action 5 low-energy moon, Bluetooth/Wi-Fi, overnight wake,
 measured-vs-hypothetical watt budgets and four control profiles](docs/ACTION5_LOW_ENERGY.md).**
 
+**Field observation update (Nov. 3):** user's 14-minute final Timelapse video
+drained a 10,000 mAh bank from 90% and the Action 5 battery from 14%. Depending
+on **1 s vs 2 s** capture interval and **25 vs 30 fps** exported video, this
+represents **5 h 50 min to 14 h actual capture**, not 14 minutes. The exact
+settings are still unconfirmed; see the calculation and reproducible
+`tools/action5_calibrate.py` in the power research document.
+
 This branch adds:
 
 - **Raspberry Pi 4**: `tools/osmo_pi.py` controls an Action 5 Pro through the
