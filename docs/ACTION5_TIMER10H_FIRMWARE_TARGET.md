@@ -66,7 +66,7 @@ Use controlled changes with one variable at a time: 3h→5h **Timer Shooting**, 
 
 ### N2 — Root, recovery and ELF map (separate explicit authorization)
 
-Follow [Alliot audit gates](ALLIOT_ACTION5_ROOT_ABI_AUDIT_2026-11-03.md). The Alliot article and unlock archive must first be reviewed for the exact firmware. Require verified partition backups, compatible signed recovery access and a return-to-stock rehearsal. The current project **has not qualified** these, and will not run any EDL/flash command on the user's camera.
+Follow [Alliot audit gates](ALLIOT_ACTION5_ROOT_ABI_AUDIT_2026-11-03.md). The original [unlock ZIP has now been authenticated and inspected](ALLIOT_UNLOCK_ZIP_STATIC_REVIEW.md): it contains a RedMagic-named Qualcomm loader and factory ABL image, **no instructions or proven DJI-compatible recovery**. The author's separate blog and actual firmware-specific procedure remain to be reviewed. Require verified partition backups, compatible signed recovery access and a return-to-stock rehearsal. The current project **has not qualified** these, and will not run any EDL/flash command on the user's camera.
 
 If and only if a compatible camera is already legitimately root-ADB enabled, use read-only preflight and owner-held copies of the specific GUI/task binaries. Preserve SHA and original file provenance; run the [offline scanner](../tools/scan_osmo_native.py). Use Ghidra/radare2 xrefs to discriminate (a) GUI capability table, (b) task-set message/struct, (c) daemon persistence and (d) wake owner.
 
@@ -95,6 +95,6 @@ Only with model/ABI proof, explicit recovery plan and owner approval: evaluate a
 - `gui_autorecord_param` is only a **subscribed name**, with diving Auto Record as an alternative interpretation. It is **not** a decoded native schedule setter.
 - A proposed `36,000` in a 32-bit field does **not** prove camera acceptance.
 - The upstream GUI plugin proves a **possible in-camera user interface** but not a native 10h scheduling backend.
-- The author's unlock ZIP exists but its contents have **not** been inspected in this environment. Do not infer a safe EDL unlock/recovery path from asset existence.
+- The author's original ZIP **has been inspected and SHA-256 verified**. Its two binaries are bootloader/EDL-related, but the ZIP contains **no documented procedure, supported firmware matrix, original backups or unbrick path**. Do not infer a safe EDL unlock/recovery path from these files.
 
 **Next blocking evidence:** exact Action 5 Pro firmware/build and the actual Timer Shooting menu state, followed by source-verified root/recovery compatibility and a 3h↔5h scheduled-task delta. This is the shortest credible path to a native 10h change.
