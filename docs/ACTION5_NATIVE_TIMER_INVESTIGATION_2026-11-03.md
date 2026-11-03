@@ -4,6 +4,12 @@
 **Companion map:** [Osmo open-source projects and historical models](OSMO_OPEN_SOURCE_ECOSYSTEM_2026-11-03.md).  
 **Authority:** research/documentation only. The user has not authorized bootloader unlock, root deployment, overwriting DJI binaries, flashing or erasing partitions.
 
+## Manufacturer-confirmed native wake (priority update)
+
+[DJI's Action 5 Pro product page](https://www.dji.com/osmo-action-5-pro) states that **Timer Shooting can wake the camera at its set time and start capture in the preset mode**. The native schedule/wake system therefore exists on stock Action 5 Pro. This is stronger evidence than any speculative Linux `cron`/`systemd` wake. It does **not** document a 10 h task duration or disclose how to change its limit. Our first priority is to preserve this working native path while identifying the *separate scheduled-task* duration field; an on-camera companion daemon is only a fallback if we can prove it remains running or can safely wake.
+
+**Latest code:** [read-only, offline ELF/string/LE32 Timer Shooting scout](ACTION5_OFFLINE_NATIVE_SCOUT.md) and five synthetic regression tests. No device access or code flashing is performed by the tool.
+
 ## 0. First answer: what does the discovered Action 5 root project actually change?
 
 **[AlliotTech/action-control](https://github.com/AlliotTech/action-control) is not an alternate DJI firmware image.** It is user-created, open-source software running as an additional service **on the Action 5 Pro's own Linux OS**; the proprietary DJI programs and shared libraries remain compiled (no DJI source tree is published). The installer requires an **already bootloader-unlocked camera with root ADB**, and can install a firmware-hash-guarded rear GUI extension. The author performed **binary disassembly / symbol and offset analysis** and then invoked the *existing* DJI Binder camera API from a native adapter. Unlike remote software, it starts/stops DJI recording *locally*, preserving official encoder/media writing. See [README](https://github.com/AlliotTech/action-control/blob/main/README.md) and [NATIVE_CAMERA_REUSE.md](https://github.com/AlliotTech/action-control/blob/main/docs/NATIVE_CAMERA_REUSE.md).
