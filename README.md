@@ -1,5 +1,17 @@
 # DJI Osmo Action 5 Pro — Remote Daily Timelapse Controller
 
+## Priority: native Action 5 Pro 10-hour Timer Shooting (camera-only)
+
+The **primary goal** is to add a **10 h / 36,000 s choice inside the Action 5 Pro itself** while preserving DJI's native daily **Timer Shooting / Repeat** alarm, low-power overnight behavior and recording. No external device should be required **during operation**.
+
+- **[Two separate workstreams](docs/ACTION5_TWO_SEPARATE_TRACKS.md)** — **N: camera-native firmware/root/GUI** (priority); **B: external Bluetooth/Pi/ESP32** (fallback only). They are different success criteria.
+- **[Detailed audit of Alliot/action-control](docs/ALLIOT_ACTION5_ROOT_ABI_AUDIT_2026-11-03.md)** — pinned source, root/ADB boundaries, proprietary ABI SHA checks, actual GUI plugin hook, installer rollback/security and hardware-reported limits.
+- **[Alliot unlock ZIP static review](docs/ALLIOT_UNLOCK_ZIP_STATIC_REVIEW.md)** — original asset URL, pinned SHA-256, unsuccessful download attempts, checklist of files/risks still to inspect. **The archive contents have not been downloaded or examined**. `tools/inspect_alliot_unlock_zip.py` is a non-executing, non-extracting manifest/checksum reader for an authentic local copy.
+- **[10 h native implementation target](docs/ACTION5_TIMER10H_FIRMWARE_TARGET.md)** — distinguish UI 5 h cap, backend validation, persistence, RTC wake, test gates and firmware risk.
+- **[Read-only ADB root preflight](tools/action5_adb_preflight.py)** — only for an already ADB-visible camera with explicit serial; checks product, architecture and vendor library fingerprints, **does not unlock**.
+
+**Status:** 13 synthetic/local tests pass for research tools; **no native 10 h patch, owner-device root test or verified recovery has occurred**. If the asset ZIP cannot be fetched through GitHub, the original ZIP must be supplied for a real contents audit. No bootloader/EDL/partition write is part of this research.
+
 ## New offline native-firmware scout (2026-11-03)
 
 - **[Read-only Action 5 Timer Shooting binary triage](docs/ACTION5_OFFLINE_NATIVE_SCOUT.md)** — `tools/scan_osmo_native.py` scans *operator-supplied offline copies* of native files for scheduler/timer string clues and 3h/5h/8h/10h LE32 literals. It records SHA-256 hashes and bounded offsets; 5 synthetic host tests pass. It **does not** unlock/root the camera, patch firmware, transmit commands, or prove a 10h setting is accepted. No DJI firmware copies are included.
