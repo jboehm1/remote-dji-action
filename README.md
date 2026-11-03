@@ -1,5 +1,9 @@
 # DJI Osmo Action 5 Pro — Remote Daily Timelapse Controller
 
+## New offline native-firmware scout (2026-11-03)
+
+- **[Read-only Action 5 Timer Shooting binary triage](docs/ACTION5_OFFLINE_NATIVE_SCOUT.md)** — `tools/scan_osmo_native.py` scans *operator-supplied offline copies* of native files for scheduler/timer string clues and 3h/5h/8h/10h LE32 literals. It records SHA-256 hashes and bounded offsets; 5 synthetic host tests pass. It **does not** unlock/root the camera, patch firmware, transmit commands, or prove a 10h setting is accepted. No DJI firmware copies are included.
+
 ## Camera-only firmware/Timer Shooting research (2026-11-03)
 
 - **[Global Osmo ecosystem inventory](docs/OSMO_OPEN_SOURCE_ECOSYSTEM_2026-11-03.md):** open-source camera-native software, Mimo/DUML/BLE libraries, hardware-verified claims, generations Action 1–6, Pocket/Nano, firmware tool limitations and GoPro Labs comparison.
