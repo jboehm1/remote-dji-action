@@ -2,13 +2,18 @@
 
 ## Current user request — 2026-11-03 (takes precedence over older Action 6 goals)
 
-**Primary target: Osmo Action 5 Pro, with external remote START/STOP first.**
-The goal now covers Raspberry Pi 4, ESP32-C6 and a future Pi Pico W port;
-probe a user-selected 6h/8h Timelapse duration with clear ACK/readback
-verification, and document later Android hotspot and remote monitoring.
+**Primary target: Osmo Action 5 Pro with camera-only, repeating native Timer Shooting of 10 hours (e.g. 08:00–18:00). NO runtime external controller.**
+Preserve the original DJI scheduled wake/low-power path. First distinguish Timer
+Shooting's own duration setter from ordinary Timelapse `02/6C` using a
+non-root 3h→5h capture comparison. Next investigate settings-only 36000s
+acceptance. Bootloader/root/native ELF modifications are prohibited without a
+separate owner-approved recovery gate. Raspberry Pi 4, ESP32-C6 and Pico W
+controller prototypes remain *fallback* experiments, not the camera-only goal.
 The original Pico (without W) has no built-in Bluetooth or Wi-Fi and cannot
 remotely control DJI by itself. An ESP32 BLE bridge is a distinct two-board
 option, not equivalent to native Pico support.
+
+**New ordering:** before any root/EDL work, follow **`docs/ACTION5_MINIMUM_NO_CABLE_FIRST_2026-11-03.md`**: stock UI and rootless Mimo/task discovery, verified scheduled-setter readback, one-time 36,000 s attempt only if qualified; camera-only autonomous >5 h wake/end validation. No cable-free root method is currently proven on locked AC204; do not confuse vendor ordinary Timelapse `02/6C` with daily Timer Shooting. EDL cable is only a fallback, estimated ~€8–15, and backups do **not** erase boot/partition brick risk.\n\nRead **`docs/ALLIOT_A_TO_Z_FIRMWARE_ACCESS.md`** before any device/root work: the original author's blog and ZIP have now been verified and explain exact AC204 firmware 10.00.16.13 / EDL → devinfo → factory ABL → root Linux process stages. **Never copy sector addresses, slot assumptions or execute writes on the owner's camera without a separate recovery gate.**\n\nSee **`docs/ACTION5_TWO_SEPARATE_TRACKS.md`** for the strict split between primary camera-native research and independent external BLE fallback; **`docs/ALLIOT_ACTION5_ROOT_ABI_AUDIT_2026-11-03.md`** for pinned source/ABI/GUI root details; **`docs/ALLIOT_UNLOCK_ZIP_STATIC_REVIEW.md`** for the **authenticated original ZIP's complete two-binary manifest and ELF/certificate audit**; and **`docs/ACTION5_TIMER10H_FIRMWARE_TARGET.md`** for the 10 h validation chain. The owner-supplied ZIP was SHA-256 verified and inspected offline; this **does not validate** the root procedure, programmer-device compatibility, bootloader key acceptance or recovery. Archive inspection is read-only via `tools/inspect_alliot_unlock_zip.py`.
 
 See `docs/ACTION5_TEST_NOW.md` for real-hardware acceptance and all limitations.
 The `02/6C` setter changes *ordinary Timelapse duration*, whereas the
@@ -39,7 +44,7 @@ Create a daily, scheduled **genuine camera Timelapse** (not normal video), with 
 
 ## Strict priorities
 1. Do not damage, flash, downgrade, overwrite, or patch DJI camera firmware in this project without a separate recovery/rollback design and explicit authorization. No proprietary binary distribution.
-2. Implement and hardware-test **external ESP32 BLE scheduler** before attempting firmware hacks.
+2. Prioritize **native Action 5 Timer Shooting**: non-destructive protocol A/B, firmware-identity confirmation and read-only offline triage before any privileged firmware intervention. A rooted on-camera companion is a high-risk fallback; a separate external ESP32 remains another fallback.
 3. Before scheduling, user must set Osmo Action 6 to **Timelapse / infinite (∞) duration**, preferred interval and save format. Configure it on camera first. No claim that the R SDK currently changes these settings.
 4. Use the DJI R SDK status reporting (1D02/1D06) for observation and explicit record commands (1D03) for attempts. Camera must confirm its state; a command ACK is **not** proof that media is being created.
 5. Never send a scheduled START with invalid system clock, stale/unverified camera status, wrong mode, overtemperature warning, or <1 GiB reported free storage.
@@ -49,11 +54,11 @@ Create a daily, scheduled **genuine camera Timelapse** (not normal video), with 
 9. Nothing is production-ready until Action 6 hardware testing and a >=7-day endurance run prove actual clip creation and daily start/stop.
 
 ## Approaches, ordered
-**A — ESP32 external scheduler (primary):** ESP32-C6 (ESP-IDF, Wi-Fi NTP, Bluetooth R SDK) sends START at local schedule opening and STOP at close, with Timelapse configured to ∞. This avoids the 5h menu ceiling. Full power-off/wake/sleep still unverified; v0 keeps camera in a remotely accessible state.
+**A — Native Action 5 Timer Shooting (primary):** identify the *scheduled task* duration setter, prove DJI's native automatic wake remains intact and test 36000s only through reversible, owner-authorized steps with full readback and real recording. The ordinary `02/6C` setting is not the scheduled-task setter. No working camera-only 10h modification is claimed.
 
-**B — Extended-duration BLE setting (experiment):** DJI Mimo protocol observations show a 16-byte 02/6C timelapse settings body containing a LE32 duration. The camera's advertised legal list ends at 18,000 seconds (5h) plus 0=unlimited. Test whether 28,800 seconds can be accepted and read back **only on hardware**; byte-field width alone does not imply support. This is a *different protocol* from the official GPS remote R SDK. No blind injection of 02/6C through 1D03.
+**B — On-camera companion (research-only fallback):** AlliotTech/action-control proves certain native Binder recording calls on an already unlocked/rooted Action 5 Pro, but Timelapse mode, timer task ownership and overnight RTC wake are unverified. Do not deploy root code until a model-matched restore path and separate permission exist.
 
-**C — DJI camera firmware patch (last resort):** Not implemented; investigate only after A/B fail and recovery and licensing analysis exist.
+**C — External ESP32/Pi scheduler (fallback), then firmware patch only as last resort:** External code exists but moon mode disables radio and overnight BLE wake is uncertain. DJI firmware patching is not implemented; require separate risk/recovery/license review. See [Action 5 offline scout](docs/ACTION5_OFFLINE_NATIVE_SCOUT.md).
 
 ## Reference revisions and rights
 - DJI official GPS remote demo, pinned git submodule at `vendor/dji-sdk`, commit `92fe23e5a749f189593f980a26a105c3bb66aa1c`. Its own source license mentions MIT and DJI EULA for the protocol. Read upstream LICENSE. Do not strip headers.

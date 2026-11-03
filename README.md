@@ -1,5 +1,28 @@
 # DJI Osmo Action 5 Pro — Remote Daily Timelapse Controller
 
+## Priority: native Action 5 Pro 10-hour Timer Shooting (camera-only)
+
+The **primary goal** is to add a **10 h / 36,000 s choice inside the Action 5 Pro itself** while preserving DJI's native daily **Timer Shooting / Repeat** alarm, low-power overnight behavior and recording. No external device should be required **during operation**.
+
+- **[Minimal no-cable/rootless route first](docs/ACTION5_MINIMUM_NO_CABLE_FIRST_2026-11-03.md)** — compare real Action 5 **Timer Shooting** 3 h↔5 h task settings/Mimo access before any EDL. A 36,000 s write is admissible only after identifying the **native scheduled-task** setter; ordinary `02/6C` is not proven. Also records why stock USB ADB is not confirmed, the **~€8–15** indicative EDL cable market and non-zero backup/brick risk.\n- **[Two separate workstreams](docs/ACTION5_TWO_SEPARATE_TRACKS.md)** — **N: camera-native firmware/root/GUI** (priority); **B: external Bluetooth/Pi/ESP32** (fallback only). They are different success criteria.
+- **[Exact Alliot A-to-Z: EDL/9008 → per-device `devinfo` flags → active factory ABL → engineering root ADB → DJI Linux systemd addon](docs/ALLIOT_A_TO_Z_FIRMWARE_ACCESS.md)** — two original author articles read, hardware firmware 10.00.16.13, safe distinctions, native Binder/GUI wiring and rollback boundaries. **Not a validated unlock procedure for our camera.**\n- **[Detailed audit of Alliot/action-control](docs/ALLIOT_ACTION5_ROOT_ABI_AUDIT_2026-11-03.md)** — pinned source, root/ADB boundaries, proprietary ABI SHA checks, actual GUI plugin hook, installer rollback/security and hardware-reported limits.
+- **[Alliot unlock ZIP static review](docs/ALLIOT_UNLOCK_ZIP_STATIC_REVIEW.md)** — original **owner-supplied asset authenticated by SHA-256 and inspected file-by-file**: two ELF binaries (Qualcomm RedMagic-named loader and factory ABL with SecTools test certificate); **no unlock scripts, recovery or Timer Shooting patch**. `tools/inspect_alliot_unlock_zip.py` is a non-executing, non-extracting manifest/checksum reader for an authentic local copy.
+- **[10 h native implementation target](docs/ACTION5_TIMER10H_FIRMWARE_TARGET.md)** — distinguish UI 5 h cap, backend validation, persistence, RTC wake, test gates and firmware risk.
+- **[Read-only ADB root preflight](tools/action5_adb_preflight.py)** — only for an already ADB-visible camera with explicit serial; checks product, architecture and vendor library fingerprints, **does not unlock**.
+
+**Status:** 13 synthetic/local tests pass for research tools; **ZIP authenticated and statically inspected, but no native 10 h patch, owner-device root test or verified recovery has occurred**. The owner supplied the original ZIP; complete static manifest and member hashes are now recorded. Root/unlock safety remains unverified. No bootloader/EDL/partition write is part of this research.
+
+## New offline native-firmware scout (2026-11-03)
+
+- **[Read-only Action 5 Timer Shooting binary triage](docs/ACTION5_OFFLINE_NATIVE_SCOUT.md)** — `tools/scan_osmo_native.py` scans *operator-supplied offline copies* of native files for scheduler/timer string clues and 3h/5h/8h/10h LE32 literals. It records SHA-256 hashes and bounded offsets; 5 synthetic host tests pass. It **does not** unlock/root the camera, patch firmware, transmit commands, or prove a 10h setting is accepted. No DJI firmware copies are included.
+
+## Camera-only firmware/Timer Shooting research (2026-11-03)
+
+- **[Global Osmo ecosystem inventory](docs/OSMO_OPEN_SOURCE_ECOSYSTEM_2026-11-03.md):** open-source camera-native software, Mimo/DUML/BLE libraries, hardware-verified claims, generations Action 1–6, Pocket/Nano, firmware tool limitations and GoPro Labs comparison.
+- **[Action 5 Pro native Timer Shooting investigation](docs/ACTION5_NATIVE_TIMER_INVESTIGATION_2026-11-03.md):** what the Action Control root project really does, known protocol property names (`camcap_timelapse_duration`, `cam_lapse_param`, `gui_autorecord_param`), non-destructive 3h→5h A/B capture, and gates for a possible 8h on-camera solution.
+
+**Important:** [AlliotTech/action-control](https://github.com/AlliotTech/action-control) is a real on-camera Linux program and native DJI Binder client for **rooted Action 5 Pro**, not a DJI source-code release or a finished 8h scheduled hack. **No firmware or bootloader has been modified in this repository.** The Timer Shooting 5h field remains unidentified. Read the new research before attempting any camera-root or duration changes.
+
 ## Current test target (2026-11-03): **Osmo Action 5 Pro**
 
 **[Start here: Action 5 Pro Pi 4 / ESP32 / Pico test matrix, commands and
