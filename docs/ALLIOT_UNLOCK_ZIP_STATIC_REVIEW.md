@@ -14,7 +14,7 @@ This is **Native Track N** only. The unrelated ESP32/BLE work stays in [Track B]
 | Size | **928,018 bytes**, recomputed from uploaded file; matches release metadata |
 | Asset SHA-256 | `995315621279cbff1a37690ddc98b0ea6732125403b001f4c9e59828b7fe81cd`, recomputed locally; **exact match** |
 | Publication | 2026-09-19 |
-| Associated author article | [`osmo-action5pro-unlock-bootloader-adbd`](https://blog.alliot.tech/post/osmo-action5pro-unlock-bootloader-adbd) — link verified from author's [issue #1](https://github.com/AlliotTech/action-control/issues/1) and [V2EX announcement](https://v2ex.com/t/1243167); article text inaccessible during this session |
+| Associated author article | [`osmo-action5pro-unlock-bootloader-adbd`](https://blog.alliot.tech/post/osmo-action5pro-unlock-bootloader-adbd) — **now read in full**; [verified A-to-Z reconstruction](ALLIOT_A_TO_Z_FIRMWARE_ACCESS.md) |
 
 ## 1. Complete original ZIP manifest (verified)
 
@@ -48,9 +48,9 @@ Directory entries `loader/` and `img-unlock/` are zero-length. Aggregate uncompr
 | Question | Answer from files alone |
 |---|---|
 | Does Alliot publish the original DJI source code? | **No.** No source files here; his separate `action-control` repo adds a root-side app. |
-| Is a boot/EDL unlock chain **plausible**? | **Yes**, loader + factory ABL are relevant ingredients. This is a hypothesis about their relationship, not a validated procedure. |
+| Is a boot/EDL unlock chain **plausible**? | **Author hardware-verified on AC204 firmware 10.00.16.13:** read-only GPT/backup → change two `devinfo` flags → replace active ABL with this image → engineering boot/root ADB. See [author's article](https://blog.alliot.tech/post/osmo-action5pro-unlock-bootloader-adbd) and [A-to-Z reconstruction](ALLIOT_A_TO_Z_FIRMWARE_ACCESS.md). **Not tested or authorized on owner's hardware.** |
 | Does the ZIP include `adbd`, a 10 h duration patch or Timer Shooting setter? | **No.** No such additional member. |
-| Are there direct instructions/host tools/backup and unbrick scripts in ZIP? | **No.** Exactly two binary members. The separate author blog might describe the operation, but was inaccessible to this audit. |
+| Are there direct instructions/host tools/backup and unbrick scripts in ZIP? | **No.** Exactly two binary members. The separate author's **now-accessible blog** documents `bkerler/edl` (pinned), per-device GPT, backups, two writes and rollback; the ZIP itself does **not** include or validate any backups. |
 | Is it safe to flash `abl-factory.img` to the Action 5? | **Not established.** No matching build/board signature verification, backup strategy or recovery validation. |
 | Can an already rooted Action 5 run custom menu code? | **Yes, per Alliot's independent native/GUI research**, but not as proof of this ZIP's applicability to our device. |
 
@@ -70,7 +70,7 @@ After this inventory passed, the two specific members were extracted **offline**
 ## Detailed remaining questions to answer file-by-file
 
 1. **Done:** exact filenames, sizes, ZIP and member cryptographic hashes, ELF formats. **Open:** provenance and licenses of both vendor/third-party boot binaries.
-2. **Done:** there are **no** instructions/scripts in the ZIP. **Open:** author's separate blog method, preconditions, USB VID/PID and exact effect on persistent storage. No speculative execution.
+2. **Done:** no scripts in ZIP; **author blog read**: EDL `05c6:9008` with tested RedMagic programmer, `devinfo` two-bit flags and factory ABL active-slot replacement, followed by readback. **Open:** applicability to our exact camera; no speculative execution.
 3. Which Action 5 Pro **firmware build**, hardware board and boot-chain version are targeted? What guards prevent use on Action 4/6 or another AC204 revision?
 4. Is Qualcomm EDL/9008 merely used to **start temporary `adbd`**, or to write any partition and change verified boot / bootloader state? Which parts persist over reboot?
 5. **Observed:** Qualcomm/test-labelled X.509 certificate in factory ABL; **open:** actual accepted OEM key/secure-boot policy, programmer handshake and flash layout. Are these vendor blobs redistributable or authentic beyond the release ZIP hash?
@@ -82,4 +82,4 @@ After this inventory passed, the two specific members were extracted **offline**
 
 ## Separate blocker for the 10-hour feature
 
-**The ZIP alone does not provide a reproducible ADB-root path**, because it has no procedure, compatibility check or recovery script. Even if the owner's hardware can eventually run root ADB, that **does not** identify the native Timer Shooting setter. The high-leverage next artifact remains a device-matched **read-only** copy of the GUI/service ELF or a 3 h vs 5 h Timer Shooting settings trace. Only after that can we decide whether a 10 h value is a UI menu addition or needs native backend modification. See [firmware target and validation gates](ACTION5_TIMER10H_FIRMWARE_TARGET.md).
+**The ZIP alone does not provide a reproducible ADB-root path**, because it has no procedure, compatibility check or recovery script. However, the [author's newly-read article](https://blog.alliot.tech/post/osmo-action5pro-unlock-bootloader-adbd) **does document** his AC204/firmware 10.00.16.13 procedure, individual-device backups and rollback. The owner-camera compatibility is still unverified. Even if root ADB becomes available, that **does not** identify the native Timer Shooting setter. The high-leverage next artifact remains a device-matched **read-only** copy of the GUI/service ELF or a 3 h vs 5 h Timer Shooting settings trace. See [firmware target](ACTION5_TIMER10H_FIRMWARE_TARGET.md) and [A-to-Z reconstruction](ALLIOT_A_TO_Z_FIRMWARE_ACCESS.md).
