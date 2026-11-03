@@ -12,6 +12,12 @@ The scanner reads **owner-supplied, already extracted, offline** files. It detec
 
 **A hit is only a lead, not proof.** Arbitrary numeric constants can coincide with 18,000/28,800/36,000 seconds; true durations may be data tables, enums, encoded structs, UI resources or computed dynamically. Distance between a literal and a string in an ELF file is not a validated call graph. No 10-hour firmware implementation has been demonstrated.
 
+### Crucial manufacturer confirmation: native wake is already supported
+
+[DJI's Action 5 Pro product page](https://www.dji.com/osmo-action-5-pro) explicitly describes **Timer Shooting** as waking the camera automatically at the programmed time and then beginning capture in the preset mode. The feature was added in [firmware 01.01.05.20 release notes](https://dl.djicdn.com/downloads/DJI_Osmo_Action_5_Pro/RN/20241107/DJI_Osmo_Action_5_Pro_Release_Notes_en.pdf). This is stronger evidence for **the stock Timer Shooting wake path** than any generic Linux cron or guessed Binder wakealarm.
+
+**Therefore prioritize retaining DJI's native recurring Timer Shooting task and changing only its duration validation**, if feasible. A separate on-camera daemon could lose automatic wake when the OS is suspended/powered off. DJI's public wording does not establish an unrestricted task duration, a 10h accepted value, or how the schedule is persisted internally.
+
 ## Usage on a development computer
 
 ```bash
