@@ -13,6 +13,8 @@ The original Pico (without W) has no built-in Bluetooth or Wi-Fi and cannot
 remotely control DJI by itself. An ESP32 BLE bridge is a distinct two-board
 option, not equivalent to native Pico support.
 
+See **`docs/ACTION5_TWO_SEPARATE_TRACKS.md`** for the strict split between primary camera-native research and independent external BLE fallback; **`docs/ALLIOT_ACTION5_ROOT_ABI_AUDIT_2026-11-03.md`** for pinned source/ABI/GUI root details; **`docs/ALLIOT_UNLOCK_ZIP_STATIC_REVIEW.md`** for the original archive link/checksum and the **uninspected ZIP content**; and **`docs/ACTION5_TIMER10H_FIRMWARE_TARGET.md`** for the 10 h validation chain. Never claim that downloading metadata means archive files or root steps were audited. Archive inspection is offline and read-only via `tools/inspect_alliot_unlock_zip.py`.
+
 See `docs/ACTION5_TEST_NOW.md` for real-hardware acceptance and all limitations.
 The `02/6C` setter changes *ordinary Timelapse duration*, whereas the
 Action 5's **Timer Shooting / Repeat** scheduled duration may use an entirely
