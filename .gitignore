@@ -7,3 +7,6 @@ dependencies.lock
 __pycache__/
 .vscode/
 .DS_Store
+.osmo_pi_schedule_state.json
+.osmo_pi_schedule_state.json.lock
+.osmo_pi_schedule_state.json.tmp

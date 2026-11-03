@@ -1,0 +1,51 @@
+diff --git a/client/server.py b/client/server.py
+index 4e10304..2ae5820 100644
+--- a/client/server.py
++++ b/client/server.py
+@@ -359,6 +359,46 @@ def start_server(app: App, port: int) -> ThreadingHTTPServer:
+                 else:
+                     cmd_id = cam.SHARPNESS_SET if name == "sharpness" else cam.DENOISE_SET
+                     self._json(app.request(0x02, cmd_id, bytes((value & 0xFF,))))
++            elif path == "/api/lapse/probe":
++                # Explicit, reversible experiment; never offered in the normal UI.
++                # 02/6C is Mimo's settings protocol, NOT the BLE GPS remote R SDK.
++                try:
++                    body = self._body()
++                    duration = int(body["duration"])
++                except (KeyError, ValueError, TypeError):
++                    self._bad("expected {duration: seconds}")
++                    return
++                active = app.registry.get(app.target) or {}
++                snapshot = app.state.snapshot()
++                before = app.state.lapse()
++                if active.get("model_id") != 0x0015:
++                    self._bad("Action 5 Pro only (model 0x0015)")
++                elif not snapshot.get("fresh") or not snapshot.get("connected") or app.link != "on":
++                    self._bad("camera must be connected with fresh status")
++                elif snapshot.get("capture_mode") != cam.MODE_TIMELAPSE:
++                    self._bad("switch to native Timelapse before probing")
++                elif (snapshot.get("record") or {}).get("state") != "idle":
++                    self._bad("stop recording before changing timelapse duration")
++                elif duration <= 5 * 3600 or duration > 24 * 3600:
++                    self._bad("experimental range: over 5h and at most 24h")
++                elif not before or not before.get("interval"):
++                    self._bad("missing cam_lapse_param readback: preserving existing settings is impossible")
++                else:
++                    payload = cam.timelapse_payload(before.get("save", 0), before["interval"], duration)
++                    result = app.request(0x02, cam.LAPSE_SET, payload)
++                    # An ACK does not certify acceptance. Observe the camera's
++                    # independently pushed cam_lapse_param state for two seconds.
++                    observed = app.state.lapse()
++                    if result.get("ok"):
++                        deadline = time.monotonic() + 2.0
++                        while time.monotonic() < deadline and (not observed or observed.get("duration") != duration):
++                            time.sleep(0.1)
++                            observed = app.state.lapse()
++                    self._json({"ok": result.get("ok", False), "ack": result,
++                                "payload_hex": payload.hex(), "before": before,
++                                "readback": observed, "verified": bool(result.get("ok") and observed and
++                                                              observed.get("duration") == duration),
++                                "warning": "Readback alone does not prove an actual 8h capture or daily timer"})
+             elif path == "/api/lapse":
+                 try:
+                     body = self._body()

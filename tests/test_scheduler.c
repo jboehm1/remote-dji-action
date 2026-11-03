@@ -45,6 +45,7 @@ int main(void) {
     t = local_at(2026, 10, 29, 18, 0);
     assert(daily_schedule_decide(&d, &t, &o) == DAILY_HOLD);
     o.maybe_ours = true;
+    o.is_timelapse = true; /* STOP only owned Timelapse; previous case was another mode. */
     assert(daily_schedule_decide(&d, &t, &o) == DAILY_STOP);
     o.is_recording = false;
     assert(daily_schedule_decide(&d, &t, &o) == DAILY_CLEAR_OWNERSHIP);

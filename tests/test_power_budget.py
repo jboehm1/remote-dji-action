@@ -18,7 +18,8 @@ SPEC.loader.exec_module(POWER)
 class PowerBudgetTests(unittest.TestCase):
     def test_low_leakage_board_two_daily_sessions(self):
         scenario = POWER.Scenario("baseline", 30, 100, 60, 2)
-        self.assertAlmostEqual(scenario.energy_wh_day(), 0.0133667, places=6)
+        # 2 x 60 s at 100 mA + 23h58m at 30 uA, then multiplied by 3.3 V.
+        self.assertAlmostEqual(scenario.energy_wh_day(), 0.0133727, places=6)
         self.assertAlmostEqual(scenario.input_mah_day(), 3.145, places=2)
 
     def test_always_on_dominates(self):
