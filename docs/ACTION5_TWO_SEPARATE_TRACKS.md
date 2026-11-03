@@ -4,7 +4,7 @@
 
 ## Track N — camera-native modification (PRIMARY)
 
-Entry points: [Alliot root/ABI/GUI audit](ALLIOT_ACTION5_ROOT_ABI_AUDIT_2026-11-03.md), [unlock ZIP static review](ALLIOT_UNLOCK_ZIP_STATIC_REVIEW.md), [10-hour firmware target and gates](ACTION5_TIMER10H_FIRMWARE_TARGET.md), [offline binary scout](ACTION5_OFFLINE_NATIVE_SCOUT.md), [`tools/action5_adb_preflight.py`](../tools/action5_adb_preflight.py).
+Entry points: [Alliot exact bootloader/root Linux and addon A-to-Z](ALLIOT_A_TO_Z_FIRMWARE_ACCESS.md), [Alliot root/ABI/GUI audit](ALLIOT_ACTION5_ROOT_ABI_AUDIT_2026-11-03.md), [unlock ZIP static review](ALLIOT_UNLOCK_ZIP_STATIC_REVIEW.md), [10-hour firmware target and gates](ACTION5_TIMER10H_FIRMWARE_TARGET.md), [offline binary scout](ACTION5_OFFLINE_NATIVE_SCOUT.md), [`tools/action5_adb_preflight.py`](../tools/action5_adb_preflight.py).
 
 1. Identify the exact Action 5 Pro firmware, native scheduler and UI ownership. Distinguish **Timer Shooting** from ordinary **Timelapse** duration.
 2. Establish a reliable, documented, model-matched root/ADB **and full recovery route** before any modification. Read-only on a pre-rooted device is not a proof of safe unlocking.
