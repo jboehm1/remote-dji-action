@@ -6,11 +6,11 @@ The **primary goal** is to add a **10 h / 36,000 s choice inside the Action 5 Pr
 
 - **[Two separate workstreams](docs/ACTION5_TWO_SEPARATE_TRACKS.md)** — **N: camera-native firmware/root/GUI** (priority); **B: external Bluetooth/Pi/ESP32** (fallback only). They are different success criteria.
 - **[Detailed audit of Alliot/action-control](docs/ALLIOT_ACTION5_ROOT_ABI_AUDIT_2026-11-03.md)** — pinned source, root/ADB boundaries, proprietary ABI SHA checks, actual GUI plugin hook, installer rollback/security and hardware-reported limits.
-- **[Alliot unlock ZIP static review](docs/ALLIOT_UNLOCK_ZIP_STATIC_REVIEW.md)** — original asset URL, pinned SHA-256, unsuccessful download attempts, checklist of files/risks still to inspect. **The archive contents have not been downloaded or examined**. `tools/inspect_alliot_unlock_zip.py` is a non-executing, non-extracting manifest/checksum reader for an authentic local copy.
+- **[Alliot unlock ZIP static review](docs/ALLIOT_UNLOCK_ZIP_STATIC_REVIEW.md)** — original **owner-supplied asset authenticated by SHA-256 and inspected file-by-file**: two ELF binaries (Qualcomm RedMagic-named loader and factory ABL with SecTools test certificate); **no unlock scripts, recovery or Timer Shooting patch**. `tools/inspect_alliot_unlock_zip.py` is a non-executing, non-extracting manifest/checksum reader for an authentic local copy.
 - **[10 h native implementation target](docs/ACTION5_TIMER10H_FIRMWARE_TARGET.md)** — distinguish UI 5 h cap, backend validation, persistence, RTC wake, test gates and firmware risk.
 - **[Read-only ADB root preflight](tools/action5_adb_preflight.py)** — only for an already ADB-visible camera with explicit serial; checks product, architecture and vendor library fingerprints, **does not unlock**.
 
-**Status:** 13 synthetic/local tests pass for research tools; **no native 10 h patch, owner-device root test or verified recovery has occurred**. If the asset ZIP cannot be fetched through GitHub, the original ZIP must be supplied for a real contents audit. No bootloader/EDL/partition write is part of this research.
+**Status:** 13 synthetic/local tests pass for research tools; **ZIP authenticated and statically inspected, but no native 10 h patch, owner-device root test or verified recovery has occurred**. The owner supplied the original ZIP; complete static manifest and member hashes are now recorded. Root/unlock safety remains unverified. No bootloader/EDL/partition write is part of this research.
 
 ## New offline native-firmware scout (2026-11-03)
 
