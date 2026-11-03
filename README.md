@@ -1,5 +1,12 @@
 # DJI Osmo Action 5 Pro — Remote Daily Timelapse Controller
 
+## Camera-only firmware/Timer Shooting research (2026-11-03)
+
+- **[Global Osmo ecosystem inventory](docs/OSMO_OPEN_SOURCE_ECOSYSTEM_2026-11-03.md):** open-source camera-native software, Mimo/DUML/BLE libraries, hardware-verified claims, generations Action 1–6, Pocket/Nano, firmware tool limitations and GoPro Labs comparison.
+- **[Action 5 Pro native Timer Shooting investigation](docs/ACTION5_NATIVE_TIMER_INVESTIGATION_2026-11-03.md):** what the Action Control root project really does, known protocol property names (`camcap_timelapse_duration`, `cam_lapse_param`, `gui_autorecord_param`), non-destructive 3h→5h A/B capture, and gates for a possible 8h on-camera solution.
+
+**Important:** [AlliotTech/action-control](https://github.com/AlliotTech/action-control) is a real on-camera Linux program and native DJI Binder client for **rooted Action 5 Pro**, not a DJI source-code release or a finished 8h scheduled hack. **No firmware or bootloader has been modified in this repository.** The Timer Shooting 5h field remains unidentified. Read the new research before attempting any camera-root or duration changes.
+
 ## Current test target (2026-11-03): **Osmo Action 5 Pro**
 
 **[Start here: Action 5 Pro Pi 4 / ESP32 / Pico test matrix, commands and
