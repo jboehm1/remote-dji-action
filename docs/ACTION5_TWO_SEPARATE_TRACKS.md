@@ -4,13 +4,14 @@
 
 ## Track N — camera-native modification (PRIMARY)
 
-Entry points: [Alliot exact bootloader/root Linux and addon A-to-Z](ALLIOT_A_TO_Z_FIRMWARE_ACCESS.md), [Alliot root/ABI/GUI audit](ALLIOT_ACTION5_ROOT_ABI_AUDIT_2026-11-03.md), [unlock ZIP static review](ALLIOT_UNLOCK_ZIP_STATIC_REVIEW.md), [10-hour firmware target and gates](ACTION5_TIMER10H_FIRMWARE_TARGET.md), [offline binary scout](ACTION5_OFFLINE_NATIVE_SCOUT.md), [`tools/action5_adb_preflight.py`](../tools/action5_adb_preflight.py).
+Entry points: **[minimum rootless/no-cable investigation first](ACTION5_MINIMUM_NO_CABLE_FIRST_2026-11-03.md)**, [Alliot exact bootloader/root Linux and addon A-to-Z](ALLIOT_A_TO_Z_FIRMWARE_ACCESS.md), [Alliot root/ABI/GUI audit](ALLIOT_ACTION5_ROOT_ABI_AUDIT_2026-11-03.md), [unlock ZIP static review](ALLIOT_UNLOCK_ZIP_STATIC_REVIEW.md), [10-hour firmware target and gates](ACTION5_TIMER10H_FIRMWARE_TARGET.md), [offline binary scout](ACTION5_OFFLINE_NATIVE_SCOUT.md), [`tools/action5_adb_preflight.py`](../tools/action5_adb_preflight.py).
 
-1. Identify the exact Action 5 Pro firmware, native scheduler and UI ownership. Distinguish **Timer Shooting** from ordinary **Timelapse** duration.
-2. Establish a reliable, documented, model-matched root/ADB **and full recovery route** before any modification. Read-only on a pre-rooted device is not a proof of safe unlocking.
-3. Examine the stock GUI option table, native task setter, persistence and the camera's existing RTC/PMIC wake mechanism.
-4. Best case: insert `36000` seconds (10 h) through a reversible vendor settings/configuration path, retaining the stock wake. If GUI validation is separate, expose the option **only after** actual scheduled-task readback and media acceptance are proved.
-5. More invasive ELF/GUI patching or on-camera companion code requires an independent review. Nothing from this track is installed on a real camera yet.
+1. **First attempt camera-only setup with no root or special cable**: identify whether stock Timer Shooting can be configured through a genuine Mimo/task protocol; compare 3 h↔5 h duration while changing only one variable. This is **not** a proven 10 h protocol. See [minimal pipeline](ACTION5_MINIMUM_NO_CABLE_FIRST_2026-11-03.md).
+2. Identify the exact Action 5 Pro firmware, native scheduler and UI ownership. Distinguish **Timer Shooting** from ordinary **Timelapse** duration.
+3. If rootless task access fails, establish a reliable, documented, model-matched root/ADB **and full recovery route** before any bootloader modification. Read-only on a pre-rooted device is not proof of safe unlocking.
+4. Examine the stock GUI option table, native task setter, persistence and the camera's existing RTC/PMIC wake mechanism.
+5. Best case: insert `36000` seconds (10 h) through a reversible vendor settings/configuration path, retaining the stock wake. If GUI validation is separate, expose the option **only after** actual scheduled-task readback and media acceptance are proved.
+6. More invasive ELF/GUI patching or on-camera companion code requires an independent review. Nothing from this track is installed on a real camera yet.
 
 **Do not** call a standard `02/6C` Timelapse duration write a Timer Shooting patch. **Do not** call a root Web console DJI source code or a bootloader unlock. **Do not** show a 10h label without 10h recording acceptance.
 
