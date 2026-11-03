@@ -1,4 +1,53 @@
-# Osmo Action 6 — Daily Timelapse Scheduler
+# DJI Osmo Action 5 Pro — Remote Daily Timelapse Controller
+
+## Current test target (2026-11-03): **Osmo Action 5 Pro**
+
+**[Start here: Action 5 Pro Pi 4 / ESP32 / Pico test matrix, commands and
+8-hour protocol probe](docs/ACTION5_TEST_NOW.md).**
+
+**[Important: Action 5 low-energy moon, Bluetooth/Wi-Fi, overnight wake,
+measured-vs-hypothetical watt budgets and four control profiles](docs/ACTION5_LOW_ENERGY.md).**
+
+**Field observation update (Nov. 3):** user's 14-minute final Timelapse video
+drained a 10,000 mAh bank from 90% and the Action 5 battery from 14%. Depending
+on **1 s vs 2 s** capture interval and **25 vs 30 fps** exported video, this
+represents **5 h 50 min to 14 h actual capture**, not 14 minutes. The exact
+settings are still unconfirmed; see the calculation and reproducible
+`tools/action5_calibrate.py` in the power research document.
+
+This branch adds:
+
+- **Raspberry Pi 4**: `tools/osmo_pi.py` controls an Action 5 Pro through the
+  local [Osmo Client](https://github.com/luisreysan/osmo-client) API. Includes
+  status, camera-safe START/STOP, daily schedule, persistent ownership, DST
+  handling and tests. Requires BLE **and** Wi-Fi to run Osmo Client itself.
+- **Reversible 6/8/10/12-hour experiment**: apply
+  `patches/osmo-client-action5-probe.patch` to Osmo Client, then run
+  `python3 tools/osmo_pi.py probe-hours --hours 8`. This targets ordinary
+  `02/6C` Timelapse; **it may not control the separate Timer Shooting duration**.
+- **ESP32-C6**: existing official DJI BLE controller prototype with daily
+  schedule, now guarded by an exact configured camera BLE MAC to prevent
+  operating the nearest unknown device. No camera firmware modification.
+- **Pico/Pico W**: hardware-dependent feasibility and porting checklist in
+  the guide. **No standalone Pico firmware** has been built or verified.
+- **Future Android / remote monitoring**: documented authenticated Pi portal,
+  recording/battery status, MJPEG preview caveats, and phone hotspot option.
+- **Investigate before rewriting**: existing Android BLE remote
+  [osmoControl](https://github.com/AlliotTech/osmoControl) and the Action 5
+  Pro **root-only** internal Web console
+  [Action Control](https://github.com/AlliotTech/action-control). Neither is
+  a verified safe daily scheduler for a stock Action 5 Pro.
+
+**Validation status:** Python scheduler tests and portable C scheduler tests
+run offline. No ESP-IDF toolchain or physical Action 5 Pro is available in this
+environment. **This is NOT certified for unattended paid-production filming.**
+
+The older sections below describe Action 6 research and the original ESP32
+proof of concept. They remain available for historical context.
+
+---
+
+## Earlier Action 6 research (2026-10-29)
 
 **Goal:** True Action 6 **Timelapse**, every day on a freely chosen schedule, e.g. **08:00–18:00 (10 hours)**, without the **5-hour finite duration** menu restriction. **The primary target is camera-only: no phone, ESP32 or other runtime hardware.** Work toward weeks of unattended operation.
 

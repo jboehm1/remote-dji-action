@@ -1,4 +1,11 @@
 menu "Daily DJI Timelapse Settings"
+    config DT_CAMERA_MAC
+        string "Exact Action 5 Pro BLE MAC (XX:XX:XX:XX:XX:XX, required for commands)"
+        default ""
+        help
+            The official demo selects the strongest nearby DJI camera.
+            A blank or mismatched MAC disables all recording commands.
+            First boot: inspect the BLE scan UART log, then set this value.
     config DT_WIFI_SSID
         string "Wi-Fi SSID for NTP sync"
         default ""

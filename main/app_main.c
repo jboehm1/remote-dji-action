@@ -43,6 +43,27 @@ static uint32_t uptime_ms(void) {
     return (uint32_t)(esp_timer_get_time() / 1000ULL);
 }
 
+/* The unmodified DJI demo picks the STRONGEST nearby Osmo advertising.
+ * Never give scheduled record commands without a positive camera identity
+ * lock. The MAC shown in the UART scan must be confirmed by the operator.
+ */
+static bool camera_mac_allowed(void) {
+    unsigned int v[6];
+    char trailing;
+    if (sscanf(CONFIG_DT_CAMERA_MAC, "%2x:%2x:%2x:%2x:%2x:%2x%c",
+               &v[0], &v[1], &v[2], &v[3], &v[4], &v[5], &trailing) != 6) {
+        ESP_LOGE(TAG, "No valid target BLE MAC in menuconfig; recording disabled");
+        return false;
+    }
+    for (int i = 0; i < 6; ++i) {
+        if (v[i] > 255 || s_ble_profile.remote_bda[i] != (uint8_t)v[i]) {
+            ESP_LOGE(TAG, "Connected camera MAC does not match configured target; recording disabled");
+            return false;
+        }
+    }
+    return true;
+}
+
 static void status_received(void *data) {
     if (!data) return;
     const camera_status_push_command_frame *state = data;
@@ -120,6 +141,7 @@ static bool connect_camera(void) {
     if (connect_logic_get_state() != BLE_CONNECTED) {
         if (connect_logic_ble_connect(false) != 0) return false;
     }
+    if (!camera_mac_allowed()) return false;
     uint8_t mac[6] = {0};
     if (esp_read_mac(mac, ESP_MAC_WIFI_STA) != ESP_OK) return false;
     int8_t request_mac[6];
@@ -199,7 +221,8 @@ void app_main(void) {
 
         daily_observation_t obs = {
             .clock_valid = clock_valid,
-            .camera_connected = (connect_logic_get_state() == PROTOCOL_CONNECTED),
+            .camera_connected = (connect_logic_get_state() == PROTOCOL_CONNECTED) &&
+                                camera_mac_allowed(),
             .status_fresh = camera_status_initialized && last_status_ms != 0 &&
                             (uint32_t)(now_ms - last_status_ms) < 10000,
             .is_recording = is_camera_recording(),

@@ -1,4 +1,25 @@
-# Engineering contract — DJI Action 6 daily timelapse
+# Engineering contract — DJI Action 5 Pro daily timelapse (Action 6 legacy)
+
+## Current user request — 2026-11-03 (takes precedence over older Action 6 goals)
+
+**Primary target: Osmo Action 5 Pro, with external remote START/STOP first.**
+The goal now covers Raspberry Pi 4, ESP32-C6 and a future Pi Pico W port;
+probe a user-selected 6h/8h Timelapse duration with clear ACK/readback
+verification, and document later Android hotspot and remote monitoring.
+The original Pico (without W) has no built-in Bluetooth or Wi-Fi and cannot
+remotely control DJI by itself. An ESP32 BLE bridge is a distinct two-board
+option, not equivalent to native Pico support.
+
+See `docs/ACTION5_TEST_NOW.md` for real-hardware acceptance and all limitations.
+The `02/6C` setter changes *ordinary Timelapse duration*, whereas the
+Action 5's **Timer Shooting / Repeat** scheduled duration may use an entirely
+different unconfirmed command. Never advertise a direct 8h probe as a hack of
+that separate scheduler.
+
+Run Python/C host tests, keep ESP-IDF builds distinct from tests. Hardware
+validation of START/STOP, overnight BLE wake and prolonged recordings is still
+mandatory. Existing clauses below about safety, no DJI firmware flashing,
+ownership, storage, status freshness and no simulated certification still apply.
 
 ## Product direction update — 2026-10-29
 
